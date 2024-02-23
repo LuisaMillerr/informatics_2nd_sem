@@ -5,13 +5,18 @@ using namespace std;
 
 const double PI = 2 * asin(1.0); 
 
+struct StructCoordinates{
+    double x;
+    double y;
+};
+
 struct StructPolygon{
     int sidesNum;
     double sideLength;
     double area;
     double perimeter;
-    double pointCoordinates;
-}RightPolygon;
+    StructCoordinates pointCoordinates;
+}RegularPolygon;
 
 void input_polygon();
 void inf_delete();
@@ -26,19 +31,19 @@ signed main()
 
 void input_polygon(){
     cout << "Give me sides number: ";
-    cin >> RightPolygon.sidesNum;
-    while(RightPolygon.sidesNum < 3){
+    cin >> RegularPolygon.sidesNum;
+    while(RegularPolygon.sidesNum < 3){
         cout << "Wrong number, it can't be lower than 3, try again, please: " << endl;
-        cin >> RightPolygon.sidesNum;
+        cin >> RegularPolygon.sidesNum;
     }
     cout << endl << "Give me side length: ";
-    cin >> RightPolygon.sideLength;
-    while(RightPolygon.sideLength <= 0){
+    cin >> RegularPolygon.sideLength;
+    while(RegularPolygon.sideLength <= 0){
         cout << "Wrong length, please, try again: ";
-        cin >> RightPolygon.sideLength;
+        cin >> RegularPolygon.sideLength;
     }
-    RightPolygon.perimeter = calculate_perimeter(RightPolygon.sideLength, RightPolygon.sidesNum);
-    RightPolygon.area = calculate_area(RightPolygon.sideLength, RightPolygon.sidesNum);
+    RegularPolygon.perimeter = calculate_perimeter(RegularPolygon.sideLength, RegularPolygon.sidesNum);
+    RegularPolygon.area = calculate_area(RegularPolygon.sideLength, RegularPolygon.sidesNum);
 }
 
 double calculate_perimeter(double sideLength, int sidesNum){
@@ -54,3 +59,4 @@ double calculate_area(double sideLength, int sidesNum){
     }
     return (pow(sideLength, 2) * sidesNum / (4 * tan(PI/sidesNum)));
 }
+
