@@ -94,6 +94,7 @@ double calculate_area(const double sideLength, const int sidesNum){
 
 }*/
 
+//добавить одз сюда и к удалению
 StructPolygon *rewrite_inf(StructPolygon *allPolygons, const int polygonsNum){
     StructPolygon *newAllPolygons = new StructPolygon[polygonsNum + 1];
     for(int i = 0; i < polygonsNum; ++i){
