@@ -27,12 +27,14 @@ double calculate_area(const double sideLength, const int sidesNum);
 double calculate_perimeter(const double sideLength, const int sidesNum);
 double *find_coordinates(StructPolygon &RegularPolygon);
 StructPolygon *rewrite_inf(StructPolygon *allPolygons, int polygonsNum);
-void input_and_exit_checking(string &str);
+//void input_and_exit_checking(string &str);
 void draw_menu();
+void polygons_output(StructPolygon *allPolygons, const int polygonsNum);
 
 signed main(){
     string temp_str;
-    StructPolygon *allPolygons = new StructPolygon[1];
+    int polygonsNum = 1;
+    StructPolygon *allPolygons = new StructPolygon[polygonsNum];
     do{
         input_and_exit_checking(temp_str);
     }while(true);
@@ -62,6 +64,18 @@ void input_polygon(StructPolygon &RegularPolygon){
     RegularPolygon.area = calculate_area(RegularPolygon.sideLength, RegularPolygon.sidesNum);
 }
 
+void polygons_output(StructPolygon *allPolygons, const int polygonsNum){
+    for(int i = 0; i < polygonsNum; ++i){
+        cout << "Polygon №" << i + 1 << ", sides number: " << allPolygons[i].sidesNum << ", side length: " <<
+            allPolygons[i].sideLength << ", vertex coordinates: ";
+        //ещё нужен вывод координат
+        /*for(int j = 0; j < allPolygons[i].sidesNum; ++j){
+
+        }*/
+        cout << "; area: " << allPolygons[i].area << "; perimeter: " << allPolygons[i].perimeter << endl;
+    }
+}
+
 double calculate_perimeter(const double sideLength, const int sidesNum){
     return (sideLength * sidesNum);
 }
@@ -89,7 +103,7 @@ StructPolygon *rewrite_inf(StructPolygon *allPolygons, const int polygonsNum){
     return (newAllPolygons);
 }
 
-void exit_checking(string &str){
+/*void exit_checking(string &str){
     cin >> str;
     cout << "Would you lke to continue?";
     if(str == "exit" || str == "Exit"){
@@ -103,8 +117,30 @@ void exit_checking(string &str){
     else{
         cout << "OK, let's write a new polygon." << endl;
     }
-}
+}*/
 
 void draw_menu(){
+    cout << "Choose one of this variants and give me a number: " << endl;
+    cout << "1. Write a new polygon" << endl;
+    cout << "2. Show information about polygons" << endl;
+    cout << "3. Delete polygon" << endl;
+    cout << "4. Exit" << endl;
+}
 
+//надо дополнить
+void user_input(int number){
+    switch(number){
+    case 1:
+        input_polygon();
+        break;
+    case 2:
+        polygons_output();
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    default:
+
+    }
 }
