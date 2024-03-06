@@ -18,7 +18,7 @@ struct StructPolygon{
     double sideLength;
     double area;
     double perimeter;
-    StructCoordinates pointCoordinates;
+    StructCoordinates coordinates;
 }RegularPolygon;
 
 void input_polygon(StructPolygon &RegularPolygon);
