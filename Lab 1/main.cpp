@@ -46,7 +46,6 @@ signed main(){
     return 0;
 }
 
-//add coordinates writing
 void input_polygon(StructPolygon &RegularPolygon){
     cout << "Give me sides number: ";
     cin >> RegularPolygon.sidesNum;
@@ -100,9 +99,11 @@ double calculate_area(const double sideLength, const int sidesNum){
     return (pow(sideLength, 2) * sidesNum / (4 * tan(PI/sidesNum)));
 }
 
-/*double *find_coordinates(StructPolygon &RegularPolygon){
-
-}*/
+double *find_coordinates(StructPolygon &RegularPolygon){
+    double R = RegularPolygon.sideLength / (2 * sin(PI / RegularPolygon.sidesNum));
+    double R0 = sqrt(x * x + y * y);
+    
+}
 
 StructPolygon *add_polygon(StructPolygon *allPolygons, int &polygonsNum, StructPolygon &RegularPolygon){
     ++polygonsNum;
@@ -185,7 +186,7 @@ void user_input(StructPolygon *allPolygons, int &polygonsNum){
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "It should be an integer number from 1 to 4" << endl;
-        cin >> RegularPolygon.sidesNum;
+        cin >> number;
     }
     //clear_console();
     switch(number){
