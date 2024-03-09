@@ -9,7 +9,8 @@ const double PI = 2 * asin(1.0);
 int polygonsNum = 0;
 
 struct StructCoordinates{
-    double vertexCoordinates[2];
+    double x;
+    double y;
 };
 
 struct StructPolygon{
@@ -17,7 +18,7 @@ struct StructPolygon{
     double sideLength;
     double area;
     double perimeter;
-    StructCoordinates coordinates;
+    StructCoordinates *vertexCoordinates;
 }RegularPolygon;
 
 void input_polygon(StructPolygon &RegularPolygon);
@@ -64,6 +65,9 @@ void input_polygon(StructPolygon &RegularPolygon){
         cout << "It should be a number which should be above 0, try again, please: ";
         cin >> RegularPolygon.sideLength;
     }
+
+    find_coordinates(RegularPolygon);
+
     RegularPolygon.perimeter = calculate_perimeter(RegularPolygon.sideLength, RegularPolygon.sidesNum);
     RegularPolygon.area = calculate_area(RegularPolygon.sideLength, RegularPolygon.sidesNum);
     //clear_console();
@@ -74,12 +78,12 @@ void polygons_output(StructPolygon *allPolygons, const int polygonsNum){
         cout << "You have no polygons to output" << endl;
     }
     for(int i = 0; i < polygonsNum; ++i){
+        double x = allPolygons[i].vertexCoordinates[0].x, y = allPolygons[i].vertexCoordinates[0].y;
         cout << "Polygon " << i + 1 << ", sides number: " << allPolygons[i].sidesNum << ", side length: " <<
             allPolygons[i].sideLength << ", vertex coordinates: ";
-        //ещё нужен вывод координат
-        /*for(int j = 0; j < allPolygons[i].sidesNum; ++j){
-
-        }*/
+        for(int j = 0; j < allPolygons[i].sidesNum; ++j){
+            cout << "[" << x << ", " << y << "] ";
+        }
         cout << "; area: " << allPolygons[i].area << "; perimeter: " << allPolygons[i].perimeter << endl;
     }
     cout << endl;
@@ -100,9 +104,34 @@ double calculate_area(const double sideLength, const int sidesNum){
 }
 
 double *find_coordinates(StructPolygon &RegularPolygon){
-    double R = RegularPolygon.sideLength / (2 * sin(PI / RegularPolygon.sidesNum));
-    double R0 = sqrt(x * x + y * y);
-    
+    RegularPolygon.vertexCoordinates = new StructCoordinates[RegularPolygon.sidesNum];
+    double R = RegularPolygon.sideLength / (2 * sin(PI / RegularPolygon.sidesNum)); //радиус описанной окружности
+    double x1 = RegularPolygon.vertexCoordinates[0].x, y1 = RegularPolygon.vertexCoordinates[0].y;
+
+    cout << "Give me coordinates of the vertex furthest from the origin: " << endl;
+    cout << "x: ";
+    cin >> x1;
+    cout << "y: ";
+    cin >> y1;
+
+    double R0 = sqrt(x1 * x1 + y1 * y1); //расстояние до начала координат
+
+    while(cin.fail() || R0 < R){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "It should be a double numbers and sqrt(x * x + y * y) can't be less than " << R << ", try again, please" << endl;
+        cout << "x: ";
+        cin >> x1;
+        cout << "y: ";
+        cin >> y1;
+    }
+
+    double x0 = x1 - R * (x1 / R0), y0 = y1 - R * (y1 / R0); //координаты центра
+
+    for(int i = 1; i < RegularPolygon.sidesNum; ++i){
+        double x = RegularPolygon.vertexCoordinates[i].x, y = RegularPolygon.vertexCoordinates[i].y;
+        //x =
+    }
 }
 
 StructPolygon *add_polygon(StructPolygon *allPolygons, int &polygonsNum, StructPolygon &RegularPolygon){
@@ -113,7 +142,7 @@ StructPolygon *add_polygon(StructPolygon *allPolygons, int &polygonsNum, StructP
         newAllPolygons[i] = allPolygons[i];
     }
     newAllPolygons[polygonsNum - 1] = RegularPolygon;
-    cout << "Sides num: " << RegularPolygon.sidesNum << endl;
+    cout << "Vertex x coordinates: " << RegularPolygon.vertexCoordinates[0].x << endl;
     cout << "newAllPolygons: " << newAllPolygons << endl;
     //delete [] allPolygons;
     return (newAllPolygons);
