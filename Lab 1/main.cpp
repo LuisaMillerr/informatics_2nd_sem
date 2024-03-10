@@ -105,7 +105,7 @@ double calculate_area(const double sideLength, const int sidesNum){
 
 double *find_coordinates(StructPolygon &RegularPolygon){
     RegularPolygon.vertexCoordinates = new StructCoordinates[RegularPolygon.sidesNum];
-    double R = RegularPolygon.sideLength / (2 * sin(PI / RegularPolygon.sidesNum)); //СЂР°РґРёСѓСЃ РѕРїРёСЃР°РЅРЅРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
+    double R = RegularPolygon.sideLength / (2 * sin(PI / RegularPolygon.sidesNum)); //радиус описанной окружности
     double x1 = RegularPolygon.vertexCoordinates[0].x, y1 = RegularPolygon.vertexCoordinates[0].y;
 
     cout << "Give me coordinates of the vertex furthest from the origin: " << endl;
@@ -114,7 +114,7 @@ double *find_coordinates(StructPolygon &RegularPolygon){
     cout << "y: ";
     cin >> y1;
 
-    double R0 = sqrt(x1 * x1 + y1 * y1); //СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РЅР°С‡Р°Р»Р° РєРѕРѕСЂРґРёРЅР°С‚
+    double R0 = sqrt(x1 * x1 + y1 * y1); //расстояние до начала координат
 
     while(cin.fail() || R0 < R){
         cin.clear();
@@ -126,7 +126,7 @@ double *find_coordinates(StructPolygon &RegularPolygon){
         cin >> y1;
     }
 
-    double x0 = x1 - R * (x1 / R0), y0 = y1 - R * (y1 / R0); //РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР°
+    double x0 = x1 - R * (x1 / R0), y0 = y1 - R * (y1 / R0); //координаты центра
 
     for(int i = 1; i < RegularPolygon.sidesNum; ++i){
         double x = RegularPolygon.vertexCoordinates[i].x, y = RegularPolygon.vertexCoordinates[i].y;
