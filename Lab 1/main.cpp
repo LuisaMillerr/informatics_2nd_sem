@@ -3,6 +3,7 @@
 #include <limits> //to check input
 #include <cstdio> //to use gets()
 #define int long long
+
 using namespace std;
 
 const double PI = 2 * asin(1.0);
@@ -25,23 +26,52 @@ void input_polygon(StructPolygon &RegularPolygon);
 double calculate_area(const double sideLength, const int sidesNum);
 double calculate_perimeter(const double sideLength, const int sidesNum);
 double *find_coordinates(StructPolygon &RegularPolygon);
-StructPolygon *add_polygon(StructPolygon *allPolygons, int &polygonsNum, StructPolygon &RegularPolygon);
-StructPolygon *delete_polygon(StructPolygon *allPolygons, int &polygonsNum);
+StructPolygon *add_polygon(StructPolygon *allPolygons);
+StructPolygon *delete_polygon(StructPolygon *allPolygons);
 void polygons_output(StructPolygon *allPolygons, const int polygonsNum);
 void exit_checking();
 void clear_console();
 void draw_menu();
-void user_input(StructPolygon *allPolygons, int &polygonsNum);
-//work with coordinates
-//max area, max perimeter, return into menu
-void find_max_area(StructPolygon *allPolygons, const int polygonsNum);
+void user_input(StructPolygon *allPolygons);
+void find_max_data(StructPolygon *allPolygons, const int polygonsNum, int choice = 1);
+void draw_menu2();
+void analyse(StructPolygon *allPolygons, const int polygonsNum);
 
 signed main(){
+    clear_console();
     StructPolygon *allPolygons = new StructPolygon[polygonsNum];
     do{
         draw_menu();
-        user_input(allPolygons, polygonsNum);
-        cout << "allPolygons: " << allPolygons << endl;
+        int number;
+        cin >> number;
+        while(cin.fail()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "It should be an integer number from 1 to 5" << endl;
+            cin >> number;
+        }
+        clear_console();
+        switch(number){
+        case 1:
+            allPolygons = add_polygon(allPolygons);
+            clear_console();
+            break;
+        case 2:
+            polygons_output(allPolygons, polygonsNum);
+            break;
+        case 3:
+            allPolygons = delete_polygon(allPolygons);
+            clear_console();
+            break;
+        case 4:
+            analyse(allPolygons, polygonsNum);
+            break;
+        case 5:
+            exit_checking();
+            break;
+        default:
+            cout << "Wrong input, try again, please" << endl;
+        }
     }while(true);
     delete [] allPolygons;
     return 0;
@@ -57,7 +87,7 @@ void input_polygon(StructPolygon &RegularPolygon){
         cin >> RegularPolygon.sidesNum;
     }
 
-    cout << endl << "Give me side length: ";
+    cout << "Give me side length: ";
     cin >> RegularPolygon.sideLength;
     while(cin.fail() || RegularPolygon.sideLength <= 0) {
         cin.clear();
@@ -70,7 +100,6 @@ void input_polygon(StructPolygon &RegularPolygon){
 
     RegularPolygon.perimeter = calculate_perimeter(RegularPolygon.sideLength, RegularPolygon.sidesNum);
     RegularPolygon.area = calculate_area(RegularPolygon.sideLength, RegularPolygon.sidesNum);
-    //clear_console();
 }
 
 void polygons_output(StructPolygon *allPolygons, const int polygonsNum){
@@ -78,12 +107,12 @@ void polygons_output(StructPolygon *allPolygons, const int polygonsNum){
         cout << "You have no polygons to output" << endl;
     }
     for(int i = 0; i < polygonsNum; ++i){
-        double x = allPolygons[i].vertexCoordinates[0].x, y = allPolygons[i].vertexCoordinates[0].y;
+        //double x = allPolygons[i].vertexCoordinates[0].x, y = allPolygons[i].vertexCoordinates[0].y;
         cout << "Polygon " << i + 1 << ", sides number: " << allPolygons[i].sidesNum << ", side length: " <<
             allPolygons[i].sideLength << ", vertex coordinates: ";
-        for(int j = 0; j < allPolygons[i].sidesNum; ++j){
-            cout << "[" << x << ", " << y << "] ";
-        }
+//        for(int j = 0; j < allPolygons[i].sidesNum; ++j){
+//            cout << "[" << x << ", " << y << "] ";
+//        }
         cout << "; area: " << allPolygons[i].area << "; perimeter: " << allPolygons[i].perimeter << endl;
     }
     cout << endl;
@@ -106,13 +135,13 @@ double calculate_area(const double sideLength, const int sidesNum){
 double *find_coordinates(StructPolygon &RegularPolygon){
     RegularPolygon.vertexCoordinates = new StructCoordinates[RegularPolygon.sidesNum];
     double R = RegularPolygon.sideLength / (2 * sin(PI / RegularPolygon.sidesNum)); //радиус описанной окружности
-    double x1 = RegularPolygon.vertexCoordinates[0].x, y1 = RegularPolygon.vertexCoordinates[0].y;
 
     cout << "Give me coordinates of the vertex furthest from the origin: " << endl;
     cout << "x: ";
-    cin >> x1;
+    cin >> RegularPolygon.vertexCoordinates[0].x;
     cout << "y: ";
-    cin >> y1;
+    cin >> RegularPolygon.vertexCoordinates[0].y;
+    double x1 = RegularPolygon.vertexCoordinates[0].x, y1 = RegularPolygon.vertexCoordinates[0].y;
 
     double R0 = sqrt(x1 * x1 + y1 * y1); //расстояние до начала координат
 
@@ -124,6 +153,7 @@ double *find_coordinates(StructPolygon &RegularPolygon){
         cin >> x1;
         cout << "y: ";
         cin >> y1;
+        R0 = sqrt(x1 * x1 + y1 * y1);
     }
 
     double x0 = x1 - R * (x1 / R0), y0 = y1 - R * (y1 / R0); //координаты центра
@@ -134,21 +164,20 @@ double *find_coordinates(StructPolygon &RegularPolygon){
     }
 }
 
-StructPolygon *add_polygon(StructPolygon *allPolygons, int &polygonsNum, StructPolygon &RegularPolygon){
+StructPolygon *add_polygon(StructPolygon *allPolygons){
     ++polygonsNum;
-    input_polygon(RegularPolygon);
-    StructPolygon *newAllPolygons = new StructPolygon[polygonsNum];
+    StructPolygon *newAllPolygons = new StructPolygon [polygonsNum];
     for(int i = 0; i < polygonsNum - 1; ++i){
         newAllPolygons[i] = allPolygons[i];
     }
-    newAllPolygons[polygonsNum - 1] = RegularPolygon;
-    cout << "Vertex x coordinates: " << RegularPolygon.vertexCoordinates[0].x << endl;
-    cout << "newAllPolygons: " << newAllPolygons << endl;
-    //delete [] allPolygons;
-    return (newAllPolygons);
+    StructPolygon tempPolygon;
+    input_polygon(tempPolygon);
+    newAllPolygons[polygonsNum - 1] = tempPolygon;
+    delete [] allPolygons;
+    return newAllPolygons;
 }
 
-StructPolygon *delete_polygon(StructPolygon *allPolygons, int &polygonsNum){
+StructPolygon *delete_polygon(StructPolygon *allPolygons){
     if(polygonsNum == 0){
         cout << "You have no polygons to delete" << endl;
         cout << endl;
@@ -157,19 +186,27 @@ StructPolygon *delete_polygon(StructPolygon *allPolygons, int &polygonsNum){
     cout << "Give me a number of the polygon you'd like to delete" << endl;
     int index;
     cin >> index;
-    while(index < 0 || index > polygonsNum){
-        cout << "Input index can not be less than 1 or more than polygons number (" << polygonsNum << ")" << endl;
+    while(cin.fail() || index < 0 || index > polygonsNum) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Input index should be an integer number and it can not be less than 1 or more than polygons number (" << polygonsNum << ")" << endl;
         cin >> index;
     }
     --index;
     --polygonsNum;
     StructPolygon *newAllPolygons = new StructPolygon[polygonsNum];
-    for(int i = 0; i < index; ++i){
-        newAllPolygons[i] = allPolygons[i];
+
+    for(int i = 0; i < polygonsNum; ++ i){
+        if(i < index){
+            newAllPolygons[i] = allPolygons[i];
+            continue;
+        }
+        ++index;
+        newAllPolygons[i]  = allPolygons[index];
     }
-    for(int i = 0; i > index && i < polygonsNum; ++i){
-        newAllPolygons[i] = allPolygons[i];
-    }
+
+    polygons_output(newAllPolygons, polygonsNum);
+
     delete [] allPolygons;
     return (newAllPolygons);
 }
@@ -183,7 +220,7 @@ void exit_checking(){
             exit(0);
         }
         else if(flag == 2){
-                //clear_console();
+            clear_console();
             cout << "OK, let's write a new polygon." << endl;
             break;
         }
@@ -193,59 +230,79 @@ void exit_checking(){
     }
 }
 
-/*void clear_console(){
+void clear_console(){
     int num = 100;
     for(int i = 0; i < num; ++i){
         cout << endl;
     }
-}*/
+}
 
 void draw_menu(){
     cout << "Choose one of this variants and give me a number: " << endl;
     cout << "1. Write a new polygon" << endl;
     cout << "2. Show information about polygons" << endl;
     cout << "3. Delete polygon" << endl;
-    cout << "4. Exit" << endl;
+    cout << "4. Analyze data" << endl;
+    cout << "5. Exit" << endl;
 }
 
-void user_input(StructPolygon *allPolygons, int &polygonsNum){
-    int number;
-    cin >> number;
-    while(cin.fail()) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "It should be an integer number from 1 to 4" << endl;
-        cin >> number;
-    }
-    //clear_console();
-    switch(number){
-    case 1:
-        allPolygons = add_polygon(allPolygons, polygonsNum, RegularPolygon);
-        break;
-    case 2:
-        polygons_output(allPolygons, polygonsNum);
-        break;
-    case 3:
-        delete_polygon(allPolygons, polygonsNum);
-        break;
-    case 4:
-        exit_checking();
-        break;
-    default:
-        cout << "Wrong input, try again, please" << endl;
-    }
-}
-
-void find_max_area(StructPolygon *allPolygons, const int polygonsNum){
-    double max_area = 0;
+void find_max_data(StructPolygon *allPolygons, const int polygonsNum, int choice){
     if(polygonsNum == 0){
-        cout << "You have no polygons" << endl;
+        cout << "You have no polygons to analyze" << endl;
+        return;
+    }
+    double max_area = 0; double max_peremeter = 0;
+    if(choice == 1){
+        for(int i = 0; i < polygonsNum; ++i){
+            if(allPolygons[i].area > max_area){
+                max_area = allPolygons[i].area;
+            }
+        }
+        cout << "The data you were interested in: " << max_area << endl;
         return;
     }
     for(int i = 0; i < polygonsNum; ++i){
-        if(allPolygons[i].area > max_area){
-            max_area = allPolygons[i].area;
+        if(allPolygons[i].perimeter > max_peremeter){
+            max_peremeter = allPolygons[i].perimeter;
         }
     }
-    cout << "Max area is " << max_area;
+    cout << "The data you were interested in: " << max_peremeter << endl;
+}
+
+void draw_menu2(){
+    cout << "Choose one of this variants and give me a number: " << endl;
+    cout << "1. Find max area" << endl;
+    cout << "2. Find max perimeter" << endl;
+    cout << "3. Return to the menu" << endl;
+}
+
+void analyse(StructPolygon *allPolygons, const int polygonsNum){
+    while(true){
+        draw_menu2();
+        int choice;
+        cin >> choice;
+        while(cin.fail()){
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "It should be an integer number from 1 to 3" << endl;
+            cin >> choice;
+        }
+        if(choice == 3){
+            clear_console();
+            return;
+        }
+        switch(choice){
+        case 1:
+            clear_console();
+            find_max_data(allPolygons, polygonsNum, 1);
+            break;
+        case 2:
+            clear_console();
+            find_max_data(allPolygons, polygonsNum, 2);
+            break;
+        default:
+            "Wrong input, try again, please. It should be an integer number from 1 to 3";
+            break;
+        }
+    }
 }
